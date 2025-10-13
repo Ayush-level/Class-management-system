@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="">
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" name="fname" required placeholder="First Name">
+        <label for="mname">Middle Name</label>
+        <input type="text" id="mname" name="mname" placeholder="Middle Name">
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" name="lname" required placeholder="Last Name">
+        <br><br>
+        <label for="ffname">Father's Name</label>
+        <input type="text" id="ffname" name="ffname" required placeholder="Father's Name">
+        <br><br>
+        <label for="mmname">Mother's Name</label>
+        <input type="text" id="mmname" name="mmname" required placeholder="Mother's Name">
+        <p>Gender:
+            <input type="radio" id="gender" name="gender" required value="Male">
+            <label for="gender">Male</label>
+            <input type="radio" id="gender" name="gender" required value="Female">
+            <label for="gender">Female</label>
+            <input type="radio" id="gender" name="gender" required value="Transgender">
+            <label for="gender">Transgender</label>
+        </p>
+        <label for="dob">Date of Birth: </label>
+        <input type="date" name="dob" id="dob">
+        <br><br>
+        <label for="doa">Date of Admission: </label>
+        <input type="date" name="doa" id="doa">
+        <br><br>
+        <label for="phone">Phone No:</label>
+        <input type="tel" id="phone" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required><br><br>
+        <label for="address">Address:</label>
+        <br>
+        <textarea name="address" id="address" rows="6" cols="30" placeholder="Write your Address here "></textarea>
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+
+</html>
