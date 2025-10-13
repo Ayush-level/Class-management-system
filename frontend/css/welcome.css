@@ -1,0 +1,33 @@
+.j1 {
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+    height: 30px;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.j1:hover {
+    background-color: rgb(11, 84, 194);
+}
+
+.p1 {
+    font-size: 20px;
+    text-align: center;
+}
+
+.h1{
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.h2{
+    text-align: center;
+    margin-top: 5px;
+    font-size: 40px;
+}
