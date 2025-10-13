@@ -1,0 +1,1 @@
+alert("Form Details Submitted Successfully. \nPlease press ok and wait for 3 seconds.");
