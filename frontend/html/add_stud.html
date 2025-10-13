@@ -9,6 +9,7 @@
 
 <body>
     <form action="">
+        <h1>Add Student Details</h1>
         <label for="fname">First Name</label>
         <input type="text" id="fname" name="fname" required placeholder="First Name">
         <label for="mname">Middle Name</label>
@@ -32,11 +33,14 @@
         <label for="dob">Date of Birth: </label>
         <input type="date" name="dob" id="dob">
         <br><br>
+        <label for="phone">Phone No:</label>
+        <input type="tel" id="phone" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required><br><br>
+        <label for="mail">Email:</label>
+        <input type="email" name="mail" class="mail" placeholder="Email :" required>
+        <br><br>
         <label for="doa">Date of Admission: </label>
         <input type="date" name="doa" id="doa">
         <br><br>
-        <label for="phone">Phone No:</label>
-        <input type="tel" id="phone" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required><br><br>
         <label for="address">Address:</label>
         <br>
         <textarea name="address" id="address" rows="6" cols="30" placeholder="Write your Address here "></textarea>
