@@ -28,5 +28,10 @@ def Student_details():
     db.session.commit()
     return jsonify({"message":"Student added successfully"}),201
 
+@student_ID.route('/api/student', methods=["GET"])
+def get_student():
+    students = student.query.all()
+    return jsonify([student.to_dict() for student in students])
+
 if __name__ == "__main__":
     app.run(debug=True)
