@@ -95,6 +95,31 @@ def get_attendance_for_date(attendance_date):
     records = Attendance.query.filter_by(date=attendance_date).all()
     return jsonify([record.to_dict() for record in records])
 
+attendance_percentage_bp = Blueprint("attendance_percentage", __name__, url_prefix='/api/attendance_percentage') 
+
+@attendance_percentage_bp.route('/api/attendance_percentage/', methods = ['GET'])
+def attendance_percentage():
+    min_attendance = request.args.get('min_attendance', default=75, type=float)
+    students = student.query.all()
+    
+    below_min = []
+    
+    for student in students:
+        total_days = Attendance.query.filter_by(roll_number=student.roll_number).count()
+        present_days = Attendance.query.filter_by(roll_number=student.roll_number, status='Present').count()
+        
+        if total_days==0:
+            percentage = 0
+        else:
+            percentage = (present_days/total_days)*100
+        
+        if percentage < min_attendance:
+            below_min.append(student)
+    
+    return jsonify({
+        "students": [student.to_dict() for student in below_min], "percentage": percentage
+        })
+
 
 if __name__ == "__main__":
     app.run(debug=True)
