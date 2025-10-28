@@ -1,5 +1,5 @@
 from flask import  request,jsonify,Blueprint
-from model import db, Attendance ,student,exam,marks,subject # model is file which Raj will make define what a Student looks like in the database
+from database import * # model is file which Raj will make define what a Student looks like in the database
 from datetime import date
 
 
@@ -10,17 +10,8 @@ student_ID = Blueprint("student", __name__, url_prefix='/api/student') # All URL
 @student_ID.route('/api/student', methods=["POST"]) # this is a API endpiont. 
 def Student_details():
     data=request.get_json() # the data Frontend sent and Converts it to Python dictionary .
-    required_fields=['name','date_of_birth','gender','father_name','mother_name','date_of_admission' ,'phone_no','address','email']
+    required_fields=['name','father_name','mother_name','date_of_birth','gender' ,'phone_no', 'date_of_admission']
     # A list of required fields
-
-    roll_number = 
-    
-    last_student = student.query.order_by(student.roll_number.desc()).first()# store roll number in sequece as student add
-    
-    if last_student:
-        new_roll = last_student.roll_number + 1
-    else:
-        new_roll = 1
 
 
 
@@ -28,21 +19,20 @@ def Student_details():
      if not data.get(field):    # Check if NOT all fields are present
       return jsonify({"error":f"Missing {field}"}),400
     
-    create_student = student(
-        roll_number=new_roll,
-        name=data['name'],
-        date_of_birth=data['date_of_birth'],
-        gender=data['gender'],
-        father_name=data['father_name'],
-        mother_name=data['mother_name'],
-        date_of_admission=data['date_of_admission'],
-        phone_no=data['phone_no'],
-        address=data['address'],
-        email=data['email']
+    create_student = dict(
+        "Name": data['name'],
+        "Father_Name": data['father_name'],
+        "Mother_Name": data['mother_name'],
+        "Gender": data['gender'],
+        "DOB": data['date_of_birth'],
+        "Status": 'A',
+        "Phone_No": data['phone_no'],
+        "DOA": data['date_of_admission']
     )
-    db.session.add(create_student) # Add student to database session
-    db.session.commit()
-    return jsonify({"message":"Student added successfully"}),201
+    if addStudent(**create_student):
+        return jsonify({"message":"Student added successfully"}),201
+    else:
+        return jsonify({"message":"Student not added"}),400
 
 @student_ID.route('/api/student', methods=["GET"]) 
 def get_student():
