@@ -1,22 +1,20 @@
 from flask import Flask
-from model import db
+
 from route import student_ID
 
 app = Flask(__name__)
 
-
-
-
-db.init_app(app)
-app.register_blueprint(student_ID)
-
-
-
 @app.route("/")
-def crete_data():
-    db.create_all()
-    return "Data created successfully"
+def ping():
+    return {"message": "pong"}
+app.register_blueprint(student_ID,url_prefix="/api/student_id")
+
+
+
 
 
 if __name__ =='__main__':
+   with app.app_context():
+        db.create_all()
+        print("Data created successfully")
    app.run(debug=True)
