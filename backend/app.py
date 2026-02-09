@@ -1,6 +1,7 @@
 from flask import Flask
 
 from Dashboard import student_bp
+from attendence import attendance_bp
 
 app = Flask(__name__)
 
@@ -9,6 +10,7 @@ def ping():
     return {"message": "pong"}
 
 app.register_blueprint(student_bp,url_prefix="/api/student")
+app.register_blueprint(attendance_bp,url_prefix="/api/attendance")
 
 
 
