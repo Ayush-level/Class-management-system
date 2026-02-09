@@ -1,67 +1,3 @@
-from flask import request,jsonify,Blueprint
-from model import db, Attendance ,student,exam,marks,subject # model is file which Abhinav will make define what a Student looks like in the database
-from datetime import date
-
-
-student_ID = Blueprint("student", __name__) # All URLs in this file start with `/api/students`
-
-
-
-@student_ID.route("/", methods=["POST"]) 
-def Student_details():
-    data=request.get_json() 
-    required_fields=['name','date_of_birth','gender','father_name','mother_name','date_of_admission' ,'phone_no','address','email']
-    # A list of required fields
-
-
-
-
-
-    for field in required_fields:
-     if not data.get(field):    # Check if NOT all fields are present
-      return jsonify({"error":f"Missing {field}"}),400
-    
-    create_student = student(
-       
-        name=data['name'],
-        date_of_birth=data['date_of_birth'],
-        gender=data['gender'],
-        father_name=data['father_name'],
-        mother_name=data['mother_name'],
-        date_of_admission=data['date_of_admission'],
-        phone_no=data['phone_no'],
-        address=data['address'],
-        email=data['email']
-    )
-    db.session.add(create_student) # Add student to database session
-    db.session.commit()
-    return jsonify({"message":"Student added successfully"}),201
-
-
-
-
-@student_ID.route("/<int:student_rlno>", methods=["GET"]) 
-def get_student():
-    students = student.query.get(student_rlno)
-
-    if not students:
-        return jsonify({"error": "Student not found"}), 404
-
-    return jsonify({
-        "name": student.name,
-        "roll": student.roll,
-        "email": student.email,
-        "phone_no": student.phone_no,
-        "father_name": student.father_name,
-        "mother_name": student.mother_name,
-        "date_of_admission": student.date_of_admission,
-        "date_of_birth": student.date_of_birth,
-        "address": student.address,
-        "email": student.email,
-        "gender":student.gender
-    }),200
-    
-
 attendeance_bp = Blueprint("attendeance", __name__, url_prefix='/api/attendeance') 
 
 @attendeance_bp.route('/api/attendeance', methods=["POST"]) #this is a API endpoint for students attendeance
@@ -183,7 +119,3 @@ def add_marks():
     db.session.add(new_marks)
     db.session.commit()
     return jsonify({"message":"Marks added successfully"}),201
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

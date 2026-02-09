@@ -1,13 +1,14 @@
 from flask import Flask
 
-from route import student_ID
+from Dashboard import student_bp
 
 app = Flask(__name__)
 
 @app.route("/")
 def ping():
     return {"message": "pong"}
-app.register_blueprint(student_ID,url_prefix="/api/student_id")
+
+app.register_blueprint(student_bp,url_prefix="/api/student")
 
 
 
