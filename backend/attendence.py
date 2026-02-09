@@ -1,12 +1,16 @@
 from flask import request,jsonify,Blueprint
 from datetime import datetime
 from models import Attendance,Student,db
+from models.school_class import SchoolClass
+from models.db import db
+
+
 attendance_bp = Blueprint("attendance", __name__) 
 
-@attendance_bp.route("/attendance", methods=["GET"])
-def dashboard():
+@attendance_bp.route("/classes/<int:class_id>/attendance", methods=["GET"])
+def get_students(class_id):
 
-    students = Student.query.all()
+    students = Student.query.filter_by(class_id=class_id).all()
 
     data = []
 
@@ -19,8 +23,8 @@ def dashboard():
 
     return jsonify(data)
 
-@attendance_bp.route('/api/attendance', methods=["POST"]) #this is a API endpoint for students attendeance
-def Attendance_details():
+@attendance_bp.route('/classes/<int:class_id>/api/attendance', methods=["POST"]) #this is a API endpoint for students attendeance
+def Attendance_details(class_id):
     data=request.get_json()
     required_fields=['roll_number','date','status']
     
@@ -28,28 +32,45 @@ def Attendance_details():
         if field not in data:# Check if NOT all fields are present
             return jsonify({"error":f"Missing {field}"}),400
 
-  
+    allowed_status = ["Present", "Absent"]
+    status=data['status'].capitalize()
+
+    if  status not in allowed_status:
+        return jsonify({"error":"Invalid status"}),400  
+
+    student = Student.query.filter_by(roll=data['roll_number']).first()
+    if not student:
+        return jsonify({"error":"Student not found"}),404
+
+    attendece_data = data.get('date')
+   
+    if attendance_date:
+        attendance_date = datetime.strptime(
+            attendance_date, "%Y-%m-%d"
+        ).date()
+    else:
+        attendance_date = datetime.utcnow().date()
+
 
     new_attendance = Attendance(
-        roll_number=data['roll_number'],
-        date=data['date'],
-        allowed_status = ["Present", "Absent"],
-        status=data['status'].capitalize()
-       )
+        roll_number=student.roll,
+        date=attendance_date,
+        status=status
+    )
     
-    if data['status'] not in allowed_status:
-        return jsonify({"error":"Invalid status"}),400
+    
+   
    
     db.session.add(new_attendance)
     db.session.commit()
     return jsonify({"message":"Attendance added successfully"}),201
 
-@attendance_bp.route('/attendance', methods=["GET"])
-def get_attendance():
+@attendance_bp.route('/classes/<int:class_id>/attendance', methods=["GET"])
+def get_attendance(class_id):
 
     attendance_date = request.args.get("date")
 
-    query = Attendance.query
+    query = Attendance.query.join(Student).filter(Student.class_id==class_id) 
 
     if attendance_date:
        
@@ -59,7 +80,7 @@ def get_attendance():
                 attendance_date, "%Y-%m-%d"
             ).date()
 
-            query = query.filter_by(date=attendance_date)
+            query = query.filter(Attendance.date==attendance_date)
 
         except ValueError:
             return jsonify({"error": "Use YYYY-MM-DD"}), 400

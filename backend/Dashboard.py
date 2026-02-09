@@ -1,13 +1,17 @@
 from flask import request,jsonify,Blueprint
 from datetime import date
+from models.school_class import SchoolClass
+from models.student import Student
+from models.enrollment import Enrollment
+from models.db import db
 
+student_bp = Blueprint("student", __name__)
 
-student_bp = Blueprint("dashboard", __name__)
+@student_bp.route("/classes/<int:class_id>/students", methods=["GET"])
+def dashboard(class_id):
 
-@student_bp.route("/students", methods=["GET"])
-def dashboard():
-
-    students = Student.query.all()
+    school_class = SchoolClass.query.get_or_404(class_id)
+    students = school_class.students
 
     data = []
 
@@ -17,8 +21,8 @@ def dashboard():
             "roll": s.roll,
             "name": s.name,
             "gender": s.gender,
-            "gp_url": f"/students/{s.id}",
-            "ep_url": f"/students/{s.id}/enrollment"
+            "gp_url": f"/classes/{class_id}/students/{s.id}",
+            "ep_url": f"/classes/{class_id}/students/{s.id}/enrollment"
         })
 
     return jsonify(data)
@@ -31,8 +35,9 @@ def dashboard():
 
 
 
-@student_bp.route("/add_student", methods=["POST"]) 
-def Student_details():
+@student_bp.route("/classes/<int:class_id>/add_student", methods=["POST"]) 
+def Student_details(class_id):
+    SchoolClass.query.get_or_404(class_id)
     data=request.get_json() 
     required_fields=['name','date_of_birth','gender','father_name','mother_name','phone_no','address','email','blood_group','roll']
     # A list of required fields
@@ -45,7 +50,7 @@ def Student_details():
        if field not in data:# Check if NOT all fields are present
            return jsonify({"error":f"Missing {field}"}),400
     
-    create_student = student(
+    create_student = Student(
        
         name=data['name'],
         date_of_birth=data['date_of_birth'],
@@ -57,17 +62,18 @@ def Student_details():
         address=data['address'],
         email=data['email'],
         blood_group=data['blood_group'],
-        roll=data['roll']
+        roll=data['roll'],
+        class_id=class_id
     )
     db.session.add(create_student) # Add student to database session
     db.session.commit()
     return jsonify({"message":"Student added successfully",
-    "student_id": Student.id,
-    "next_url": f"/students/{Student.id}/enrollment"}),201
+    "student_id": create_student.id,
+    "next_url": f"/classes/{class_id}/students/{create_student.id}/enrollment"}),201
 
 
-@student_bp.route("/students/<int:id>/enrollment", methods=["POST"])
-def add_enrollment(id):
+@student_bp.route("/classes/<int:class_id>/students/<int:id>/enrollment", methods=["POST"])
+def add_enrollment(class_id,id):
 
     student = Student.query.get_or_404(id)
 
@@ -86,14 +92,14 @@ def add_enrollment(id):
 
     return jsonify({
         "message": "Student fully onboarded",
-        "dashboard_url": "/students"
+        "dashboard_url": "/classes/{class_id}/students"
     }), 201
 
 
 
-@student_bp.route("/<int:student_rlno>", methods=["GET"]) 
-def get_student(student_rlno):
-    students = student.query.get(student_rlno)
+@student_bp.route("/classes/<int:class_id>/students/<int:student_rlno>", methods=["GET"]) 
+def get_student(class_id,student_rlno):
+    students = Student.query.get(student_rlno)
 
     if not students:
         return jsonify({"error": "Student not found"}), 404
@@ -110,7 +116,9 @@ def get_student(student_rlno):
         "address": student.address,
         "gender":student.gender,
         "blood_group":student.blood_group,
-        "roll":student.roll
+        "roll":student.roll,
+        "class_id":student.class_id,
+        "student_id":students.id
     }),200
     
 
