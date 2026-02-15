@@ -136,7 +136,8 @@ class StudentService(BaseService):
     def update_student(self, student_id: str, student_dto: StudentDTO) -> StudentDTO:
         """Update student information"""
         # Check if student exists
-        existing_student = self.get_student_by_id(student_id)
+        if not self.exists('enrollment_profile', 'student_id = :student_id', {'student_id': student_id}):
+            raise NotFoundException(f"Student with ID {student_id} not found", "student")
         
         # Validate student data
         self._validate_student_data(student_dto)
@@ -172,7 +173,8 @@ class StudentService(BaseService):
     def delete_student(self, student_id: str) -> bool:
         """Delete a student"""
         # Check if student exists
-        self.get_student_by_id(student_id)
+        if not self.get_student_by_id(student_id):
+            raise NotFoundException(f"Student with ID {student_id} not found", "student")
         
         # Delete from general_profile first (due to foreign key constraint)
         self.execute_delete('general_profile', 'student_id = :student_id', {'student_id': student_id})

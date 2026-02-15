@@ -58,7 +58,8 @@ class ClassService(BaseService):
     def update_class(self, class_id: str, class_dto: ClassDTO) -> ClassDTO: #To be reviewed
         """Update a class"""
         # Check if class exists
-        self.get_class_by_id(class_id)
+        if not self.exists('classes', 'class_id = :class_id', {'class_id': class_dto.class_id}):
+            raise NotFoundException(f"Class with ID {class_id} not found", "class")
         
         # Validate class level
         if not 1 <= class_dto.class_level <= 5:
@@ -81,7 +82,8 @@ class ClassService(BaseService):
     def delete_class(self, class_id: str) -> bool:
         """Delete a class"""
         # Check if class exists
-        self.get_class_by_id(class_id)
+        if not self.exists('classes', 'class_id = :class_id', {'class_id': class_id}):
+            raise NotFoundException(f"Class with ID {class_id} not found", "class")
         
         # Check if class has enrolled students
         if self.exists('enrollment_profile', 'class_id = :class_id', {'class_id': class_id}):
